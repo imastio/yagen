@@ -35,7 +35,7 @@ namespace Imast.Yagen.Cli.Processing
                 RedirectStandardOutput = true,
                 CreateNoWindow = true,
                 FileName = "yq",
-                Arguments = $"m -x {context.ExistingFile.FullName} {context.EvaluatedSourceFile.FullName}"
+                ArgumentList = { "eval-all",  "select(fi == 0) * select(fi == 1)", context.ExistingFile.FullName, context.EvaluatedSourceFile.FullName}
             };
 
             // create an evaluation process

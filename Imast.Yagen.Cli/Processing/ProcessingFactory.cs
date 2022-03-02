@@ -29,7 +29,7 @@
             return name.ToLowerInvariant() switch
             {
                 "remove" => new RemoveYamlOperator(),
-                "yq-mx" => new YqMergeYamlOperator(),
+                "yqmerge" => new YqMergeYamlOperator(),
                 _ => new ReplaceYamlOperator()
             };
         }

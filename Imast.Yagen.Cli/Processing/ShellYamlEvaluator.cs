@@ -30,7 +30,7 @@ namespace Imast.Yagen.Cli.Processing
             shellContentBuilder.AppendLine("#!/usr/bin/env sh");
             
             // error exit mode
-            shellContentBuilder.AppendLine("set -o errexit -o pipefail");
+            shellContentBuilder.AppendLine("set -e");
 
             // start content
             shellContentBuilder.AppendLine("cat <<EOF");
