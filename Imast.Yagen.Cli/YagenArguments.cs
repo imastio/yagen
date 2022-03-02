@@ -19,9 +19,9 @@ namespace Imast.Yagen.Cli
         public DirectoryInfo Output { get; set; }
         
         /// <summary>
-        /// The recipe file
+        /// The manifest file
         /// </summary>
-        public FileInfo Recipe { get; set; }
+        public FileInfo Manifest { get; set; }
         
         /// <summary>
         /// The goals to execute

@@ -11,27 +11,19 @@ namespace Imast.Yagen.Cli
     public class YagenRootCommand : RootCommand
     {
         /// <summary>
-        /// The yagen handler
-        /// </summary>
-        private readonly YagenHandler handler;
-
-        /// <summary>
         /// Yet another YAML Generator
         /// </summary>
         /// <param name="handler">The handler instance</param>
         public YagenRootCommand(YagenHandler handler) : base("Yet Another (YAML) Generator")
         {
-            // keep handler
-            this.handler = handler;
-            
             // add input directory option
             this.AddOption(new Option<DirectoryInfo>(new[] { "-i", "--input" }, () => new DirectoryInfo(Directory.GetCurrentDirectory()), "The input directory").ExistingOnly());
             
             // add output directory option
             this.AddOption(new Option<DirectoryInfo>(new[] { "-o", "--output" }, () => new DirectoryInfo(Directory.GetCurrentDirectory()), "The output directory").ExistingOnly());
             
-            // add recipe file location
-            this.AddOption(new Option<FileInfo>(new []{ "-r", "--recipe" }, "The recipe file location").ExistingOnly());
+            // add manifest file location
+            this.AddOption(new Option<FileInfo>(new []{ "-m", "--manifest" }, "The manifest file location").ExistingOnly());
             
             // add goals argument
             this.AddArgument(new Argument<IEnumerable<string>>("goals", "The list of goals to execute"));
