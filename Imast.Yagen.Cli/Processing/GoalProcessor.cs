@@ -1,7 +1,10 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Imast.Yagen.Cli.Processing
 {
@@ -52,7 +55,7 @@ namespace Imast.Yagen.Cli.Processing
         public async Task Execute()
         {
             // make sure all the layers are there
-            var missingLayer = goal.Layers.Any(layer => !Directory.Exists(layer.FullName));
+            var missingLayer = this.goal.Layers.Any(layer => !Directory.Exists(layer.FullName));
 
             // there is a missing layer
             if (missingLayer)
@@ -61,12 +64,21 @@ namespace Imast.Yagen.Cli.Processing
             }
 
             // make sure all the env files are there
-            var missingEnv = goal.EnvFiles.Any(env => !File.Exists(env.FullName));
+            var missingEnv = this.goal.EnvFiles.Any(env => !File.Exists(env.FullName));
 
             // there is a missing env
             if (missingEnv)
             {
                 throw new YagenException("One of the environment files is missing");
+            }
+
+            // make sure all the value files are there
+            var missingValue = this.goal.ValueFiles.Any(env => !File.Exists(env.FullName));
+
+            // there is a missing value file
+            if (missingValue)
+            {
+                throw new YagenException("One of the value files is missing");
             }
 
             // recreate directory if exists
@@ -78,10 +90,29 @@ namespace Imast.Yagen.Cli.Processing
             // the output directory is created
             Directory.CreateDirectory(outputDirectory.FullName);
 
-            // start executing layers
-            foreach (var layer in goal.Layers)
+            // the stack of values
+            var values = new List<IDictionary<string, object>>();
+
+            // build deserializer
+            var deserializer = new DeserializerBuilder()
+                .IgnoreUnmatchedProperties()
+                .WithNamingConvention(HyphenatedNamingConvention.Instance)
+                .Build();
+
+            // start processing value files
+            foreach (var valueFile in this.goal.ValueFiles)
             {
-                await this.ProcessLayer(layer);
+                // deserialize values file
+                var valueObject = deserializer.Deserialize<IDictionary<string, object>>(await File.ReadAllTextAsync(valueFile.FullName));
+
+                // add to values collection
+                values.Add(valueObject);
+            }
+
+            // start executing layers
+            foreach (var layer in this.goal.Layers)
+            {
+                await this.ProcessLayer(layer, values);
             }
         }
 
@@ -89,8 +120,9 @@ namespace Imast.Yagen.Cli.Processing
         /// Process the given layer to the output directory
         /// </summary>
         /// <param name="layer">The layer to process</param>
+        /// <param name="values">The values collection</param>
         /// <returns></returns>
-        private async Task ProcessLayer(FileSystemInfo layer)
+        private async Task ProcessLayer(FileSystemInfo layer, List<IDictionary<string, object>> values)
         {
             // gets all the files in the directory
             var sourceFiles = Directory.GetFiles(layer.FullName, "*", SearchOption.AllDirectories);
@@ -145,7 +177,8 @@ namespace Imast.Yagen.Cli.Processing
                     ResolvedFileName = ymlFilename,
                     SourceFile = new FileInfo(sourceFile),
                     LocalDirectoryPath = relativeSourceDirectory,
-                    OutputFilePath = Path.Combine(this.outputDirectory.FullName, relativeSourceDirectory, ymlFilename)
+                    OutputFilePath = Path.Combine(this.outputDirectory.FullName, relativeSourceDirectory, ymlFilename),
+                    ValuesCollection = values
                 };
 
                 // evaluate and get result

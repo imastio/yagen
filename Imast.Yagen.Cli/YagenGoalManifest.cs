@@ -18,6 +18,11 @@ namespace Imast.Yagen.Cli
         public List<string> EnvFiles { get; set; }
 
         /// <summary>
+        /// The values file
+        /// </summary>
+        public List<string> ValueFiles { get; set; }
+
+        /// <summary>
         /// The goal options
         /// </summary>
         public YagenOptionsManifest Options { get; set; }

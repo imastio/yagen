@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Imast.Yagen.Cli.Processing
 {
@@ -36,5 +37,10 @@ namespace Imast.Yagen.Cli.Processing
         /// The output file path
         /// </summary>
         public string OutputFilePath { get; set; }
+
+        /// <summary>
+        /// The values collection
+        /// </summary>
+        public List<IDictionary<string, object>> ValuesCollection { get; set; }
     }
 }

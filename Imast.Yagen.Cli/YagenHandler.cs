@@ -67,7 +67,7 @@ namespace Imast.Yagen.Cli
             // build deserializer
             var deserializer = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties()
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .WithNamingConvention(HyphenatedNamingConvention.Instance)
                 .Build();
 
             // try deserialize manifest
@@ -151,12 +151,11 @@ namespace Imast.Yagen.Cli
                 Name = goal.Name,
                 Layers = goal.Layers?.Select(path => new DirectoryInfo(Path.GetFullPath(path, args.Input.FullName))).ToList() ?? new List<DirectoryInfo>(),
                 EnvFiles = goal.EnvFiles?.Select(path => new FileInfo(Path.GetFullPath(path, args.Input.FullName))).ToList() ?? new List<FileInfo>(),
+                ValueFiles = goal.ValueFiles?.Select(path => new FileInfo(Path.GetFullPath(path, args.Input.FullName))).ToList() ?? new List<FileInfo>(),
                 Options = MapGoalOptions(manifest.Options, goal.Options)
             };
         }
-
-
-
+        
         /// <summary>
         /// Maps the yagen goal options
         /// </summary>

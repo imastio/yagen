@@ -14,14 +14,19 @@ namespace Imast.Yagen.Cli.Processing
         public string Name { get; set; }
 
         /// <summary>
-        /// The goal options
-        /// </summary>
-        public YagenGoalOptions Options { get; set; }
-
-        /// <summary>
         /// The environment files
         /// </summary>
         public List<FileInfo> EnvFiles { get; set; }
+
+        /// <summary>
+        /// The values file
+        /// </summary>
+        public List<FileInfo> ValueFiles { get; set; }
+
+        /// <summary>
+        /// The goal options
+        /// </summary>
+        public YagenGoalOptions Options { get; set; }
 
         /// <summary>
         /// The goal layers

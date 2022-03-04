@@ -15,6 +15,9 @@
             return name.ToLowerInvariant() switch
             {
                 "sh" => new ShellYamlEvaluator(),
+                "scn" => new ScribanYamlEvaluator(),
+                "sbn" => new ScribanYamlEvaluator(),
+                "scriban" => new ScribanYamlEvaluator(),
                 _ => new NopYamlEvaluator()
             };
         }
