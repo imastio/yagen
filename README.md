@@ -1,2 +1,2 @@
-# yagen
-Yet Another (YAML) Generator
+# Yet Another (YAML) Generator
+
