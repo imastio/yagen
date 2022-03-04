@@ -1,0 +1,43 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Publish Win 64
+      run: dotnet publish -p:PublishProfile=win64-single
+    - name: Publish Linux 64
+      run: dotnet publish -p:PublishProfile=linux64-single
+    - name: Upload Linux Binary
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Imast.Yagen.Cli/bin/Release/publish/linux-x64/Imast.Yagen.Cli
+        asset_name: yagen-linux64-$tag
+        tag: ${{ github.ref }}
+        overwrite: true
+    - name: Upload Windows Binary
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Imast.Yagen.Cli/bin/Release/publish/win-x64/Imast.Yagen.Cli.exe
+        asset_name: yagen-win64-$tag.exe
+        tag: ${{ github.ref }}
+        overwrite: true
