@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Imast.Yagen.Cli.Ext;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -91,7 +92,7 @@ namespace Imast.Yagen.Cli.Processing
             Directory.CreateDirectory(outputDirectory.FullName);
 
             // the stack of values
-            var values = new List<IDictionary<string, object>>();
+            var values = new List<IDictionary<object, object>>();
 
             // build deserializer
             var deserializer = new DeserializerBuilder()
@@ -103,16 +104,22 @@ namespace Imast.Yagen.Cli.Processing
             foreach (var valueFile in this.goal.ValueFiles)
             {
                 // deserialize values file
-                var valueObject = deserializer.Deserialize<IDictionary<string, object>>(await File.ReadAllTextAsync(valueFile.FullName));
+                var valueObject = deserializer.Deserialize<IDictionary<object, object>>(await File.ReadAllTextAsync(valueFile.FullName));
 
                 // add to values collection
                 values.Add(valueObject);
             }
 
+            // keep all the values
+            var allValues = new Dictionary<object, object>();
+
+            // apply all the values
+            values.ForEach(v => allValues.DeepApply(v));
+
             // start executing layers
             foreach (var layer in this.goal.Layers)
             {
-                await this.ProcessLayer(layer, values);
+                await this.ProcessLayer(layer, allValues);
             }
         }
 
@@ -122,7 +129,7 @@ namespace Imast.Yagen.Cli.Processing
         /// <param name="layer">The layer to process</param>
         /// <param name="values">The values collection</param>
         /// <returns></returns>
-        private async Task ProcessLayer(FileSystemInfo layer, List<IDictionary<string, object>> values)
+        private async Task ProcessLayer(FileSystemInfo layer, IDictionary<object, object> values)
         {
             // gets all the files in the directory
             var sourceFiles = Directory.GetFiles(layer.FullName, "*", SearchOption.AllDirectories);
@@ -178,7 +185,7 @@ namespace Imast.Yagen.Cli.Processing
                     SourceFile = new FileInfo(sourceFile),
                     LocalDirectoryPath = relativeSourceDirectory,
                     OutputFilePath = Path.Combine(this.outputDirectory.FullName, relativeSourceDirectory, ymlFilename),
-                    ValuesCollection = values
+                    Values = values
                 };
 
                 // evaluate and get result

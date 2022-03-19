@@ -41,6 +41,6 @@ namespace Imast.Yagen.Cli.Processing
         /// <summary>
         /// The values collection
         /// </summary>
-        public List<IDictionary<string, object>> ValuesCollection { get; set; }
+        public IDictionary<object, object> Values { get; set; }
     }
 }

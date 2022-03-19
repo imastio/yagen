@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Scriban;
 using Scriban.Runtime;
@@ -24,20 +25,19 @@ namespace Imast.Yagen.Cli.Processing
             var source = await File.ReadAllTextAsync(context.SourceFile.FullName);
 
             // the template context
-            var templateContext = new TemplateContext();
-            
-            // add all the values
-            context.ValuesCollection?.ForEach(values =>
+            var templateContext = new TemplateContext
             {
-                // create a new script object
-                var scriptObject = new ScriptObject();
+                StrictVariables = true
+            };
 
-                // populate with values dictionary
-                scriptObject.Import(values);
+            // create a new script object
+            var scriptObject = new ScriptObject();
 
-                // add next script object
-                templateContext.PushGlobal(scriptObject);
-            });
+            // populate with values dictionary
+            scriptObject.Import(context.Values ?? new Dictionary<object, object>());
+           
+            // add next script object
+            templateContext.PushGlobal(scriptObject);
 
             // the parsed template
             var parsed = Template.Parse(source);
