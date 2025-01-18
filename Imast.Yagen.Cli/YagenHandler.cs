@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Imast.Yagen.Cli.Processing;
 using YamlDotNet.Serialization;
@@ -48,6 +49,8 @@ public class YagenHandler
     /// <returns></returns>
     protected virtual async Task<int> ExecuteImpl(YagenArguments arguments)
     {
+        Console.WriteLine($"DEBUG: {JsonSerializer.Serialize(arguments, new JsonSerializerOptions{WriteIndented = true})}");
+        
         // the manifest file
         var manifestFile = arguments.Manifest?.FullName;
 
