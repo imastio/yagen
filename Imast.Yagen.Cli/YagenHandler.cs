@@ -49,7 +49,10 @@ public class YagenHandler
     /// <returns></returns>
     protected virtual async Task<int> ExecuteImpl(YagenArguments arguments)
     {
-        Console.WriteLine($"DEBUG: {JsonSerializer.Serialize(arguments, new JsonSerializerOptions{WriteIndented = true})}");
+        Console.WriteLine($"DEBUG: Input: {arguments.Input?.FullName}");
+        Console.WriteLine($"DEBUG: Output: {arguments.Output?.FullName}");
+        Console.WriteLine($"DEBUG: Manifest: {arguments.Manifest?.FullName}");
+        Console.WriteLine($"DEBUG: Manifest: {arguments.Goals?.ToArray().Length}");
         
         // the manifest file
         var manifestFile = arguments.Manifest?.FullName;
@@ -57,7 +60,7 @@ public class YagenHandler
         // if manifest file is not there
         if (string.IsNullOrWhiteSpace(manifestFile))
         {
-            manifestFile = Path.Combine(arguments.Input.FullName, DEFAULT_MANIFEST_FILENAME);
+            manifestFile = Path.Combine(arguments.Input!.FullName, DEFAULT_MANIFEST_FILENAME);
         }
 
         // check if file exists
